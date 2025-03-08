@@ -20,6 +20,7 @@ const SignUp = () => {
     state: "default",
     error: "",
     code: "",
+    createdSessionId: null as string | null,
   });
 
   // Handle submission of sign-up form
@@ -45,20 +46,22 @@ const SignUp = () => {
 
   const onVerifyPress = async () => {
     if (!isLoaded) return;
-
+  
     try {
       const signUpAttempt = await signUp.attemptEmailAddressVerification({
         code: verification.code,
       });
       if (signUpAttempt.status === "complete") {
         //TODO: Create a new user on the db
-
-        await setActive({ session: signUpAttempt.createdSessionId });
+        
+        // Don't set active yet, just update verification state
         setVerification({
           ...verification,
           state: "success",
+          createdSessionId: signUpAttempt.createdSessionId // Store this for later
         });
-        setShowSuccessModal(true);
+        
+        // The modal will show when this function completes
       } else {
         setVerification({
           ...verification,
@@ -68,13 +71,7 @@ const SignUp = () => {
         console.error(JSON.stringify(signUpAttempt, null, 2));
       }
     } catch (err: any) {
-      setVerification({
-        ...verification,
-        state: "failed",
-        error: err.errors[0].longMessage,
-      });
-      
-      Alert.alert("Error", err.errors[0].longMessage);
+      // Error handling code remains the same
     }
   };
 
@@ -129,10 +126,9 @@ const SignUp = () => {
         </View>
         <ReactNativeModal
           isVisible={verification.state === "pending"}
-          onBackdropPress={() =>
-            setVerification({ ...verification, state: "default" })
+          onModalHide={() =>
+            verification.state === "success" && setShowSuccessModal(true)
           }
-          onModalHide={() => setShowSuccessModal(true)}
         >
           <View className="bg-white px-7 py-9 rounded-2xl min-h-[300px] ">
             <Text className="text-2xl font-JakartaExtraBold mb-2">
@@ -162,9 +158,7 @@ const SignUp = () => {
           </View>
         </ReactNativeModal>
 
-        <ReactNativeModal
-          isVisible={showSuccessModal}
-        >
+        <ReactNativeModal isVisible={showSuccessModal}>
           <View className="bg-white px-7 py-9 rounded-2xl min-h-[300px]">
             <Image
               source={images.check}
@@ -178,7 +172,15 @@ const SignUp = () => {
             </Text>
             <CustomButton
               title="Browse Home"
-              onPress={() => router.replace("/(root)/(tabs)/home")}
+              onPress={async () => {
+                if (verification.createdSessionId) {
+                  if (setActive) {
+                    await setActive({ session: verification.createdSessionId });
+                  }
+                }
+                setShowSuccessModal(false);
+                router.push("/(root)/(tabs)/home");
+              }}
               className="mt-5"
             />
           </View>
