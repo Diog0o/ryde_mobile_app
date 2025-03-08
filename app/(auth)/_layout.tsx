@@ -1,13 +1,15 @@
-import { Stack } from 'expo-router';
+import { Stack, Redirect } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { useAuth } from '@clerk/clerk-expo'
 
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 const AuthLayout =() => {
+  const { isSignedIn } = useAuth()
 
-
+  if (isSignedIn) {
+    return <Redirect href={'/(root)/(tabs)/home'} />
+  }
   return (
       <Stack>
         <Stack.Screen name="welcome" options={{ headerShown: false }} />
