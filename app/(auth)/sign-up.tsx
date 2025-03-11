@@ -7,6 +7,7 @@ import { Link, router } from "expo-router";
 import OAuth from "@/components/OAuth";
 import { useSignUp } from "@clerk/clerk-react";
 import ReactNativeModal from "react-native-modal";
+import { fetchAPI } from "@/lib/fetch";
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -52,16 +53,21 @@ const SignUp = () => {
         code: verification.code,
       });
       if (signUpAttempt.status === "complete") {
-        //TODO: Create a new user on the db
+        await fetchAPI("/(api)/user", {
+          method: "POST",
+          body: JSON.stringify({
+            name: form.name,
+            email: form.email,
+            clerkId: signUpAttempt.createdUserId
+          })
+        })
         
-        // Don't set active yet, just update verification state
         setVerification({
           ...verification,
           state: "success",
-          createdSessionId: signUpAttempt.createdSessionId // Store this for later
+          createdSessionId: signUpAttempt.createdSessionId
         });
         
-        // The modal will show when this function completes
       } else {
         setVerification({
           ...verification,
@@ -71,7 +77,12 @@ const SignUp = () => {
         console.error(JSON.stringify(signUpAttempt, null, 2));
       }
     } catch (err: any) {
-      // Error handling code remains the same
+      setVerification({
+        ...verification,
+        state: "failed",
+        error: err.errors[0].longMessage,
+      });
+      Alert.alert("Error", err.errors[0].longMessage);
     }
   };
 
