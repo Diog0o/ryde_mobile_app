@@ -10,7 +10,7 @@ const FindRide = () => {
     setUserLocation,
   } = useLocationStore();
   return (
-    <RideLayout>
+    <RideLayout title="Ride">
       <Text className="text-2xl">You are here: {userAddress}</Text>
       <Text className="text-2xl"> You are going to here: {destinationAddress}</Text>
     </RideLayout>
