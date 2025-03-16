@@ -6,6 +6,7 @@ import { useLocationStore } from "@/store";
 import { useUser } from "@clerk/clerk-expo";
 import { useEffect, useState } from "react";
 import * as Location from "expo-location";
+import { router } from "expo-router";
 import {
   FlatList,
   View,
@@ -83,7 +84,6 @@ const recentRides = [
     user_email: "user1@example.com",
     created_at: "2024-08-12 08:49:01.809053",
     user_id: "1",
-    created_at: "2024-08-12 08:49:01.809053",
     driver: {
       driver_id: "1",
       first_name: "James",
@@ -110,7 +110,6 @@ const recentRides = [
     created_at: "2024-08-12 18:43:54.297838",
     driver_id: 3,
     user_id: "1",
-    created_at: "2024-08-12 18:43:54.297838",
     driver: {
       driver_id: "3",
       first_name: "Michael",
@@ -140,27 +139,34 @@ export default function Page() {
         return;
       }
       let location = await Location.getCurrentPositionAsync();
-      
+
       const address = await Location.reverseGeocodeAsync({
         latitude: location.coords?.latitude!,
         longitude: location.coords?.longitude!,
-      })
-      
+      });
+
       setUserLocation({
         // latitude: location.coords.latitude,
         // longitude: location.coords.longitude,
         latitude: 37.78825,
         longitude: -122.4324,
-        address: `${address[0].name}, ${address[0].region}`
-      })
-    }
-      
+        address: `${address[0].name}, ${address[0].region}`,
+      });
+    };
+
     requestLocation();
   }, []);
 
   const handleSignOut = () => {};
 
-  const handleDestinationPress = () => {};
+  const handleDestinationPress = (location: {
+    latitude: number;
+    longitude: number;
+    address: string;
+  }) => {
+    setDestinationLocation(location)
+    router.push("/(root)/find-ride");
+  };
 
   return (
     <SafeAreaView className="bg-general-500">
@@ -212,12 +218,12 @@ export default function Page() {
                 Your Current Location
               </Text>
               <View className="flex flex-row items-center bg-transparent h-[300px]">
-                    <Map />
+                <Map />
               </View>
             </>
             <Text className="text-xl font-JakartaBold mt-5 mb-3">
-                Recent Rides
-              </Text>
+              Recent Rides
+            </Text>
           </>
         )}
       />
