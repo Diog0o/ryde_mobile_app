@@ -1,3 +1,5 @@
+import 'react-native-reanimated';
+import 'react-native-gesture-handler';
 import "../global.css";
 import 'react-native-get-random-values';
 import { useFonts } from "expo-font";
