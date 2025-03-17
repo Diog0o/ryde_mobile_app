@@ -65,6 +65,8 @@ const Map = () => {
   const [markers, setMarkers] = useState<MarkerData[]>([]);
 
   useEffect(() => {
+    //TODO: REMOVE LATER
+    setDrivers(drivers);
     if (!userLatitude || !userLongitude) {
       return;
     }
