@@ -45,7 +45,12 @@ export default function Payment({
                 customer_id: customer
             })
         })
+
+        if (result.client_secret) {
+            //ride-create
+        }
     }
+
 
     const { client_secret, error } = await response.json();
     if (client_secret) {
