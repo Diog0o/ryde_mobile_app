@@ -63,9 +63,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="rides"
         options={{
-          title: "Profile",
+          title: "Rides",
           headerShown: false,
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} source={icons.list} />
@@ -83,9 +83,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="rides"
+        name="profile"
         options={{
-          title: "Rides",
+          title: "Profile",
           headerShown: false,
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} source={icons.profile} />
